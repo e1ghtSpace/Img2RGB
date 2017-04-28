@@ -95,39 +95,70 @@ public class UI extends javax.swing.JFrame {
             if(returnValue == JFileChooser.APPROVE_OPTION) {
                 String ImgLocation = fileChooser.getSelectedFile().getAbsolutePath();
                 try {
-                    BufferedImage img = null;
+                    BufferedImage imgOrig = null;
+                    BufferedImage imgNew = null;
                     try {
-                    img = ImageIO.read(new File(ImgLocation));
+                    imgOrig = ImageIO.read(new File(ImgLocation));
+                    imgNew = ImageIO.read(new File(ImgLocation));
                     }
                     catch (IOException e) {
                     }
-                    for(int x=1; x<(img.getWidth())/3; x++) {
-                        for(int y=1; y<(img.getHeight())/3; y++){
-                            int color = img.getRGB(x*3-1, y*3-1);
+                    for(int y=0; y<imgOrig.getHeight(); y++) {
+                        for(int x=0; x<imgOrig.getWidth(); x++){
+                            
+                            // Initialise variables just in case
+                            int colorXpos = 1;
+                            int colorYpos = 1;
+                            
+                            if (x % 3 == 0) {
+                                colorXpos = x + 1;
+                            }
+                            if (x % 3 == 1) {
+                                colorXpos = x;
+                            }
+                            if (x % 3 == 2) {
+                                colorXpos = x - 1;
+                            }
+                            
+                            while (colorXpos >= imgOrig.getWidth()){
+                                colorXpos = colorXpos - 1;
+                            }
+                            
+                            if (y % 3 == 0) {
+                                colorYpos = y + 1;
+                            }
+                            if (y % 3 == 1) {
+                                colorYpos = y;
+                            }
+                            if (y % 3 == 2) {
+                                colorYpos = y - 1;
+                            }
+                            
+                            while (colorYpos >= imgOrig.getHeight()){
+                                colorYpos-=1;
+                            }
+                            
+                            int color = imgOrig.getRGB(colorXpos, colorYpos);
                             
                             // put colour value into red, green and blue (in the range of 0 to 255)
                             int blue = color & 0xff;
                             int green = (color & 0xff00) >> 8;
                             int red = (color & 0xff0000) >> 16;
                             
-                            int pxlR = new Color(red, 0, 0).getRGB();
-                            img.setRGB(x*3-2, y*3-2, pxlR);
-                            img.setRGB(x*3-2, y*3-1, pxlR);
-                            img.setRGB(x*3-2, y*3, pxlR);
-
-                            int pxlG = new Color(0, green, 0).getRGB();
-                            img.setRGB(x*3-1, y*3-2, pxlG);
-                            img.setRGB(x*3-1, y*3-1, pxlG);
-                            img.setRGB(x*3-1, y*3, pxlG);
-
-                            int pxlB = new Color(0, 0, blue).getRGB();
-                            img.setRGB(x*3, y*3-2, pxlB);
-                            img.setRGB(x*3, y*3-1, pxlB);
-                            img.setRGB(x*3, y*3, pxlB);
+                            if (x % 3 == 0) {
+                                int pxlColor = new Color(red, 0, 0).getRGB();
+                                imgNew.setRGB(x, y, pxlColor);
+                            } else if (x % 3 == 1) {
+                                int pxlColor = new Color(0, green, 0).getRGB();
+                                imgNew.setRGB(x, y, pxlColor);
+                            } else if (x % 3 == 2) {
+                                int pxlColor = new Color(0, 0, blue).getRGB();
+                                imgNew.setRGB(x, y, pxlColor);
+                            }
                         }
                     }
                     File outputfile = new File(jTxt_OutputLocation.getText());
-                    ImageIO.write(img, "png", outputfile);
+                    ImageIO.write(imgNew, "png", outputfile);
                 } catch (IOException e) {
                 
                 }
